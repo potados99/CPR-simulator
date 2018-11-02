@@ -11,6 +11,7 @@ class Display {
 private:
   SoftwareSerial serial;
   uint8_t digit[DIGITS];
+
   void refresh(int pointDigit);
   void clearDigit(uint8_t d);
   void writeDigit(uint8_t d, uint8_t value);
@@ -18,6 +19,7 @@ private:
 
 public:
   Display(int rx, int tx);
+  
   void show(double val, int pointDigit);
 };
 

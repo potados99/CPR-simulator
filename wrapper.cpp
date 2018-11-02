@@ -16,7 +16,7 @@ void setup() {
   pinMode(A7, INPUT);
 
 
-   
+
 }
 
 void loop() {
@@ -32,22 +32,22 @@ void loop() {
 }
 
 void smoothen(double& val) {
-  static const int numReadings = 50;
+  static const uint8_t numReadings = 50;
 
-  static int readings[numReadings];      // the readings from the analog input
-  static int readIndex = 0;              // the index of the current reading
-  static int total = 0;                  // the running total
-  static int average = 0;                // the average
+  static uint16_t readings[numReadings];      // the readings from the analog input
+  static uint8_t readIndex = 0;              // the index of the current reading
+  static uint32_t total = 0;                  // the running total
+  static uint16_t average = 0;                // the average
 
   // subtract the last reading:
    total = total - readings[readIndex];
-   
+
    // read from the sensor:
    readings[readIndex] = (val > 5) ? val : 0;
-   
+
    // add the reading to the total:
    total = total + readings[readIndex];
-   
+
    // advance to the next position in the array:
    readIndex = (readIndex + 1) % numReadings;
 
