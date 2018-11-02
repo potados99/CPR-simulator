@@ -5,10 +5,12 @@ Sensor::Sensor(int pin) {
 }
 
 void Sensor::setSensitivity(uint8_t sens) {
+  if (sens > 100) return;
   this->sensitivity = sens;
 }
 
 void Sensor::setSmoothness(uint8_t smooth) {
+  if (smooth > 100) return;
   this->smoothness = smooth;
 }
 
@@ -28,18 +30,16 @@ void Sensor::filter_sensitivity(uint16_t& val) {
 
   uint16_t threshold = (100 - this->sensitivity) * 5;
 
-  if (abs(lastVal - val) >= threshold) {
+  if (abs(lastVal - val) >= threshold)
     lastVal = val;
-  }
-  else {
+  else
     val = lastVal;
-  }
 }
 
 void Sensor::filter_smoothness(uint16_t& val) {
-  static const uint8_t  numReadings = 50;
+  static uint8_t        numReadings = this->smoothness;
 
-  static uint16_t       readings[numReadings];      // the readings from the analog input
+  static uint16_t       readings[100];              // the readings from the analog input
   static uint8_t        readIndex = 0;              // the index of the current reading
   static uint32_t       total = 0;                  // the running total
   static uint16_t       average = 0;                // the average
@@ -52,7 +52,7 @@ void Sensor::filter_smoothness(uint16_t& val) {
 
   average = total / numReadings;
   val = average;
-} 
+}
 
 void Sensor::filter_scale(uint16_t& val) {
   val = val * this->scale;

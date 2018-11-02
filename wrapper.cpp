@@ -1,68 +1,20 @@
 #include "Display.h"
 
+Sensor mySensor(A7);
 Display myDisp(3, 2);
 
-void smoothen(double& val);
-void lowerSensitivity(double& val);
-void levelShift(double& val);
-
 void setup() {
-  // put your setup code here, to run once:
   Serial.begin(9600);
-   while (!Serial) {
-     ; // wait for serial port to connect. Needed for native USB port only
-   }
+  while (!Serial) { }
 
-  pinMode(A7, INPUT);
-
-
-
+  mySensor.setSensitivity(95);
+  mySensor.setSmoothness(20);
+  mySenosr.setScale(0.016L);
 }
 
 void loop() {
-  // put your main code here, to run repeatedly:
-  double readVal = analogRead(A7);
+  uint16_t readVal = mySensor.read(F_SENSITIVITY | F_SMOOTHNESS | F_SCALE);
+  myDisp.show((double)readVal, 0);
 
-  smoothen(readVal);
-  //lowerSensitivity(readVal);
-  levelShift(readVal);
-
-  myDisp.show(readVal, 2);
   Serial.println(readVal);
-}
-
-void smoothen(double& val) {
-  static const uint8_t numReadings = 50;
-
-  static uint16_t readings[numReadings];      // the readings from the analog input
-  static uint8_t readIndex = 0;              // the index of the current reading
-  static uint32_t total = 0;                  // the running total
-  static uint16_t average = 0;                // the average
-
-  // subtract the last reading:
-   total = total - readings[readIndex];
-
-   // read from the sensor:
-   readings[readIndex] = (val > 5) ? val : 0;
-
-   // add the reading to the total:
-   total = total + readings[readIndex];
-
-   // advance to the next position in the array:
-   readIndex = (readIndex + 1) % numReadings;
-
-   // calculate the average:
-   average = total / numReadings;
-   val = average;
-}
-
-void lowerSensitivity(double& val) {
-  static double lastVal = 0;
-
-  if (fabs(lastVal - val) >= 20 ) lastVal = val;
-  else val = lastVal;
-}
-
-void levelShift(double& val) {
-  val = val / 63L;
 }

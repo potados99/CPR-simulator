@@ -3,6 +3,7 @@
 
 #include "Arduino.h"
 #include <SoftwareSerial.h>
+#include <stdlib.h>
 
 #define DIGITS 4
 #define CLEARABLE_DIGIT 3
@@ -13,14 +14,22 @@ private:
   uint8_t digit[DIGITS];
 
   void refresh(int pointDigit);
-  void clearDigit(uint8_t d);
-  void writeDigit(uint8_t d, uint8_t value);
-  uint8_t truncate(uint8_t origin, uint8_t length);
+  bool clearDigit(uint8_t d);
+  bool writeDigit(uint8_t d, uint8_t value);
+
+  void displayError(uint8_t errorCode);
+
+  void setBuffer(uint8_t val);
+  bool writeToBuffer(uint16_t val, uint8_t startIndex, uint8_t length);
+
+  uint8_t _getDigitsOfDecimal(uint16_t num);
+  uint16_t _truncate(uint8_t origin, uint8_t length);
 
 public:
   Display(int rx, int tx);
-  
-  void show(double val, int pointDigit);
+
+  void show(uint8_t val);                 // parent mode
+  void show(double val, int pointDigit);  // child mode
 };
 
 #endif
