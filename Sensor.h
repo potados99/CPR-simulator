@@ -5,18 +5,18 @@
 
 #define HAS(X, Y) ((X) & (Y))
 
-typedef enum FILTER_OPTIONS {
+typedef enum _FILTER_OPTIONS {
   F_SENSITIVITY     = 0x01,
   F_SMOOTHNESS      = 0x02,
   F_SCALE           = 0x04
-};
+} FILTER_OPTIONS;
 
 class Sensor {
 private:
   uint8_t   pin;
   uint8_t   sensitivity = 50; // 1 to 100
   uint8_t   smoothness = 50; // 1 to 100
-  double    scale = 0.016L;
+  uint8_t   scale = 2; //1 to 100, percent
 
   void      filter_sensitivity(uint16_t& val);
   void      filter_smoothness(uint16_t& val);
@@ -27,7 +27,7 @@ public:
 
   void      setSensitivity(uint8_t sens);
   void      setSmoothness(uint8_t smooth);
-  double    setScale(double scale);
+  void      setScale(uint8_t scale);
 
   uint16_t  read(uint8_t options = 0);
 };

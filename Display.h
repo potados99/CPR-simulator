@@ -12,6 +12,7 @@ class Display {
 private:
   SoftwareSerial serial;
   uint8_t digit[DIGITS];
+  uint8_t validInts;
 
   void refresh(int pointDigit);
   bool clearDigit(uint8_t d);
@@ -23,7 +24,7 @@ private:
   bool writeToBuffer(uint16_t val, uint8_t startIndex, uint8_t length);
 
   uint8_t _getDigitsOfDecimal(uint16_t num);
-  uint16_t _truncate(uint8_t origin, uint8_t length);
+  uint16_t _truncate(uint16_t origin, uint8_t length);
 
 public:
   Display(int rx, int tx);

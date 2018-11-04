@@ -20,21 +20,23 @@ void Display::show(double val, int pointDigit) {
   int16_t integerPart = (int)val;
   uint16_t decimalPart = (int)((val - integerPart) * pow(10, pointDigit));
 
+  this->validInts = _getDigitsOfDecimal(integerPart);
+
   // OK Clear 2018.11.2
-  uint8_t length = (pointDigit < 0) ? 0 : pointDigit;
-  writeToBuffer(decimalPart, 0, length);
-  writeToBuffer(integerPart, length, 4 - length);
+  uint8_t decLength = (pointDigit < 0) ? 0 : pointDigit;
+  writeToBuffer(decimalPart, 0, decLength);
+  writeToBuffer(integerPart, decLength, 4 - decLength);
 
   refresh(pointDigit);
 }
 
 void Display::refresh(int pointDigit) {
   for (uint8_t i = 0; i < DIGITS; ++ i) {
-    if (i > 0 && i > pointDigit && digit[i] == 0) clearDigit(i);
+    if (i > 0 && i - (pointDigit < 0 ? 0 : pointDigit) + 1 > validInts) clearDigit(i);
     else writeDigit(i, digit[i]);
   }
 
-  if (pointDigit < 0 && pointDigit > 3) return;
+  if (pointDigit < 0 || pointDigit > 3) return;
   writeDigit(pointDigit + 4, 4);  // point
 }
 
@@ -44,7 +46,7 @@ bool Display::clearDigit(uint8_t d) {
     return false;
   }
 
-  retrun writeDigit(d + 4, 0);
+  return writeDigit(d + 4, 0);
 }
 
 bool Display::writeDigit(uint8_t d, uint8_t val) {
@@ -76,7 +78,7 @@ bool Display::writeToBuffer(uint16_t val, uint8_t startIndex, uint8_t length) {
   // if number is small(digits are less than length), 0 is padded left.
   for (uint8_t i = 0; i < length; ++ i) {
     digit[startIndex + i] = truncated ? truncated % 10 : 0;
-    truncated \= 10;
+    truncated /= 10;
   }
 
   return true;
@@ -84,13 +86,13 @@ bool Display::writeToBuffer(uint16_t val, uint8_t startIndex, uint8_t length) {
 
 uint8_t Display::_getDigitsOfDecimal(uint16_t num) {
   uint8_t digits = 0;
-  while (origin > pow(10, ++ digits));
+  while (num > pow(10, ++ digits));
 
   return digits;
 }
 
 uint16_t Display::_truncate(uint16_t origin, uint8_t length) {
-	if (origin < pow(10, length - 1)) return origin; // length over
+	if (origin < pow(10, length)) return origin; // length over
 	while ((origin /= 10) >= pow(10, length));
 	return origin;
 }
