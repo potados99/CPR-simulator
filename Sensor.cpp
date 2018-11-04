@@ -21,6 +21,7 @@ void Sensor::setScale(uint8_t scale) {
 uint16_t Sensor::read(uint8_t options) {
   uint16_t value = analogRead(this->pin);
 
+  if (value < 20) value = 0;
   if (HAS(options, F_SENSITIVITY))    filter_sensitivity(value);
   if (HAS(options, F_SMOOTHNESS))     filter_smoothness(value);
   if (HAS(options, F_SCALE))          filter_scale(value);
