@@ -16,6 +16,11 @@ void setup() {
 
   monitor.attachSensor(&_pushSensor);
   monitor.attachDisplay(&_BPMDisp);
+
+  monitor.setThreshold(30);
+  monitor.setRefreshCycle(500);
+
+  monitor.start();
 }
 
 void loop() {

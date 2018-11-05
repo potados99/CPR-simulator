@@ -3,7 +3,7 @@
 Display::Display(int rx, int tx): serial(rx, tx) {
   setBuffer(0);
 
-  this->serial.begin(19200);
+  this->serial.begin(9600);
   refresh(-1);
 }
 
@@ -28,6 +28,20 @@ void Display::show(double val, int pointDigit) {
   writeToBuffer(integerPart, decLength, 4 - decLength);
 
   refresh(pointDigit);
+}
+
+void Display::singleDot(uint8_t digit) {
+  for (uint8_t i = 0; i < DIGITS; ++ i) {
+    clearDigit(i);
+  }
+  writeDigit(digit + 4, 4);  // point
+}
+
+void Display::singleZero(uint8_t digit) {
+  for (uint8_t i = 0; i < DIGITS; ++ i) {
+    clearDigit(i);
+  }
+  writeDigit(digit, 0);  // point
 }
 
 void Display::refresh(int pointDigit) {

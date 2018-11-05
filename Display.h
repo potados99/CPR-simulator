@@ -31,6 +31,9 @@ public:
 
   void show(uint8_t val);                 // parent mode
   void show(double val, int pointDigit);  // child mode
+
+  void singleDot(uint8_t digit);
+  void singleZero(uint8_t digit);
 };
 
 #endif

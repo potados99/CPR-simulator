@@ -2,7 +2,6 @@
 
 PulseMonitor::PulseMonitor() {
   memset(this->times, 0, sizeof(times));
-
 }
 
 void PulseMonitor::attachSensor(Sensor *sens) {
@@ -13,15 +12,37 @@ void PulseMonitor::attachDisplay(Display *disp) {
   this->BPMDisp = disp;
 }
 
+void PulseMonitor::setThreshold(uint16_t threshold) {
+  this->threshold = threshold;
+}
+
+void PulseMonitor::setRefreshCycle(uint32_t cycle) {
+  this->refreshCycle = cycle;
+}
+
 uint16_t PulseMonitor::getPressure() {
-  return this->currentPressure;
+  return this->enable ? this->currentPressure : 0;
+}
+
+void PulseMonitor::start() {
+  this->enable = true;
 }
 
 void PulseMonitor::loop() {
-  if (! this->pushSensor || ! this->BPMDisp) return;
+  if (! this->pushSensor || ! this->BPMDisp || ! this->enable) return;
 
   detectPush();
-  showBPM();
+
+  bool firstPushed =  this->times[0];
+  if (firstPushed) {
+    if (! ready) this->startTime = millis();
+    this->ready = true;
+  }
+  else {
+    this->ready = false;
+  }
+
+  if (this->ready) showBPM();
 }
 
 void PulseMonitor::detectPush() {
@@ -53,11 +74,26 @@ void PulseMonitor::showBPM() {
 
   uint16_t count = 0;
   for (uint8_t i = 0; i < TBUF_SIZE; ++ i) {
-    if (now - times[i] < dataLife) ++ count;
+    if (times[i] && (now - times[i] < dataLife)) ++ count;
   }
 
+  bool young = (millis() - this->startTime) < this->dataLife;
   uint16_t BPM = (uint16_t)((60000L / dataLife) * count);
-  this->BPMDisp->show(BPM, -1);
+
+  if (BPM < 60) {
+    pulseVisible = young ? false : true;
+  }
+  else pulseVisible = true;
+
+  if (this->pulseVisible) this->BPMDisp->show(BPM, -1);
+  else {
+    static uint8_t d = 3;
+
+    this->pulseVisible = false;
+    this->BPMDisp->singleDot(d);
+    if (d == 0) d = 3;
+    else d --;
+  }
 
   lastBPMCalc = millis();
 }
