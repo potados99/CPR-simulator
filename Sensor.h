@@ -17,6 +17,7 @@ private:
   uint8_t   sensitivity = 50; // 1 to 100
   uint8_t   smoothness = 50; // 1 to 100
   uint8_t   scale = 2; //1 to 100, percent
+  uint8_t   options = 0;
 
   void      filter_sensitivity(uint16_t& val);
   void      filter_smoothness(uint16_t& val);
@@ -28,8 +29,9 @@ public:
   void      setSensitivity(uint8_t sens);
   void      setSmoothness(uint8_t smooth);
   void      setScale(uint8_t scale);
+  void      setOptions(uint8_t options);
 
-  uint16_t  read(uint8_t options = 0);
+  uint16_t  read();
 };
 
 #endif
