@@ -11,10 +11,9 @@ uint32_t times[TBUF_SIZE];
 uint16_t BPM;
 
 static const uint32_t refreshCycle = 1000;
-static const uint32_t dataLife = 5000;
+static const uint32_t dataLife = 10000;
 
-
-void pushed();
+void countPush(uint16_t readVal);
 void calculateBPM();
 
 void setup() {
@@ -29,35 +28,35 @@ void setup() {
 }
 
 void loop() {
-  static bool pushing = false;
-
   uint16_t readVal = mySensor.read(F_SENSITIVITY | F_SMOOTHNESS | F_SCALE);
-  uint16_t threshold = 100;
   int8_t decpnt = -1;
-
-
-  if (readVal > threshold) {
-    if (! pushing) {
-      pushed();
-      pushing = true;
-    }
-  }
-  else if (readVal == 0) {
-    pushing = false;
-  }
-
 
   PressureDisplay.show(readVal, decpnt);
 
+  countPush(readVal);
   calculateBPM();
-
 }
 
-void pushed() {
+void countPush(uint16_t readVal) {
+  static bool pushing = false;
   static uint8_t tindex = 0;
 
-  times[tindex] = millis();
-  tindex = (tindex + 1) % TBUF_SIZE;
+  static const uint16_t threshold = 100;
+
+  bool justPushed = (readVal > threshold) && (! pushing);
+  bool released = (readVal == 0);
+
+  if (justPushed) {
+      times[tindex] = millis();
+      tindex = (tindex + 1) % TBUF_SIZE;
+      pushing = true;
+  }
+  else if (released) {
+    pushing = false;
+  }
+  else {
+    // releasing
+  }
 }
 
 void calculateBPM() {
@@ -67,7 +66,6 @@ void calculateBPM() {
 
   if (now - lastBPMCalc > refreshCycle) {
     uint16_t count = 0;
-
 
     for (uint8_t i = 0; i < TBUF_SIZE; ++ i) {
       if (now - times[i] < dataLife) {
