@@ -2,11 +2,11 @@
 #include "Sensor.h"
 #include "PulseMonitor.h"
 
-Display presDisp(4, 2);
+Display presDisp(4, 2); /* used to display current pressure */
 
 Sensor _pushSensor(A7);
 Display _BPMDisp(5, 3);
-PulseMonitor monitor;
+PulseMonitor monitor; /* used to calculate and display current BPM */
 
 void setup() {
   _pushSensor.setSensitivity(90);
@@ -17,13 +17,13 @@ void setup() {
   monitor.attachSensor(&_pushSensor);
   monitor.attachDisplay(&_BPMDisp);
 
-  monitor.setThreshold(30);
-  monitor.setRefreshCycle(500);
+  monitor.setThreshold(70);
+  monitor.setRefreshCycle(1000);
 
   monitor.start();
 }
 
 void loop() {
   monitor.loop();
-  presDisp.show(monitor.getPressure(), -1);
+  presDisp.show(monitor.getPressure() / 10, -1); /* -1: no decimal point */
 }
