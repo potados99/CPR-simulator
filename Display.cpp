@@ -12,7 +12,8 @@ void Display::show(uint8_t val) {
 }
 
 void Display::show(double val, int pointDigit) {
-  if ((val > pow(10, 4 - pointDigit) - 1) || (val < 0L)) { // over representation limit.
+  if ((val > pow(10, 4 - pointDigit) - 1) || (val < 0L)) {
+    // over representation limit.
     displayError(0x0F);
     return;
   }
