@@ -1,5 +1,5 @@
 /*
 CPR-simulator
-2018 B.J.Song
+2018 Potados
 
 */
